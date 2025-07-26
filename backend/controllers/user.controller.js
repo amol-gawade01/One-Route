@@ -101,7 +101,17 @@ const Login = async (req,res, next) => {
   
 };
 
+const Logout = (req,res,next) => {
+  res.removeHeader("auth-token")
+  console.log("userlogout successfuly")
+  res.json(
+    {
+      message:"User logout successfully"
+    }
+  )
+
 module.exports = {
    SignUp,
-   Login
+   Login,
+   Logout
 }
