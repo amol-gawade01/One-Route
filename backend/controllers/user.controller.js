@@ -1,6 +1,7 @@
 const userModel = require('../models/user.model');
 const { z } = require("zod");
 
+const blacklistedModel = require('../models/blacklisted.model');
 
   const signUpSchema = z.object({
     firstName: z.string().min(1, "First name is required"),
@@ -86,32 +87,57 @@ const Login = async (req,res, next) => {
  
   const token = await user.generateAuthToken();
 
- res.setHeader("auth-token", token);
+  const options = {
+    httpOnly:true,
+    secure: process.env.NODE_ENV === 'production',
+  }
 
-
-  res.json(
-    {
-      message:"User Login successfullly",
-      user,
-      token
-    }
+ return res
+           .setHeader("auth-token", token)
+           .cookie("token",token,options)
+           .json(
+           {
+             message:"User Login successfullly",
+             user,
+            token
+           }
   )
 
 
   
 };
 
-const Logout = (req,res,next) => {
-  res.removeHeader("auth-token")
-  console.log("userlogout successfuly")
-  res.json(
+const Logout = async (req,res,next) => {
+   const token = req.headers["auth-token"] || req.cookies.token;
+   const blacklistedToken = await blacklistedModel.create({
+    token
+   });
+   
+   const options = {
+    httpOnly:true,
+    secure: process.env.NODE_ENV === 'production',
+  }
+
+  res.clearCookie("token",options)
+    .json(
     {
       message:"User logout successfully"
     }
   )
+}
+
+
+const getUser = (req,res,next) => {
+  res.status(200).json({
+    data:req.user,
+    message:"user fetch successfully"
+  })
+}
 
 module.exports = {
    SignUp,
    Login,
-   Logout
+   Logout,
+   getUser
+
 }
