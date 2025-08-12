@@ -45,7 +45,7 @@ try {
     const token = await  userCreated.generateAuthToken();
     
     
-    console.log("User Created successfully");
+
 
     res.json({
     token,
@@ -71,37 +71,45 @@ const Login = async (req,res, next) => {
   const validatedData = LoginSchema.parse(req.body) 
 
   const { email,password} = validatedData;
-
-  const user = await userModel.findOne({ email }).select('+password');
-
-  if(!user){
-    throw new Error("User not found ")
-  }
-
-  const checkedPasword = await user.comparePassword(password)
-
-  if(!checkedPasword){
-    throw new Error("Password is wrong")
-  }
-
- 
-  const token = await user.generateAuthToken();
-
-  const options = {
-    httpOnly:true,
-    secure: process.env.NODE_ENV === 'production',
-  }
-
- return res
-           .setHeader("auth-token", token)
-           .cookie("token",token,options)
-           .json(
-           {
-             message:"User Login successfullly",
-             user,
-            token
-           }
-  )
+try {
+  
+    const user = await userModel.findOne({ email }).select('+password');
+  
+    if(!user){
+      throw new Error("User not found ")
+    }
+  
+    const checkedPasword = await user.comparePassword(password)
+  
+    if(!checkedPasword){
+      throw new Error("Password is wrong")
+    }
+  
+   
+    const token = await user.generateAuthToken();
+  
+    const options = {
+      httpOnly:true,
+      secure: process.env.NODE_ENV === 'production',
+    }
+  
+   return res
+             .setHeader("auth-token", token)
+             .cookie("token",token,options)
+             .json(
+             {
+               message:"User Login successfullly",
+               user,
+              token
+             }
+    )
+} catch (error) {
+  res.status(400).json({
+    message:"Failed to login user",
+    Error:error.message
+  })
+  
+}
 
 
   
