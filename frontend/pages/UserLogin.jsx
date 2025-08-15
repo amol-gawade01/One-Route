@@ -1,17 +1,34 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { backgroundImage } from "../utils/images";
+import { userDataContext } from "../context/UserContext";
+import { useContext } from "react";
+import axios from "axios";
 
 const UserLogin = () => {
   const [email,setEmail] = useState('');
   const [password,setPassword] = useState('')
-  const [userData,setuserData] = useState({})
-  const submitForm = (e) => {
+  const {user,setUser} = useContext(userDataContext)
+  const navigate = useNavigate();
+
+  const submitForm = async (e) => {
     e.preventDefault();
-    setuserData({
+    
+    const newUser = {
       email:email,
       password:password
-    })
+    }
+
+    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`,newUser)
+        console.log(response)
+        if(response.status == 200){
+          const data  = response.data;
+          console.log('data',data)
+          localStorage.setItem('token',data.token)
+          setUser(data.user)
+          navigate('/home')
+    
+        }
 
     setEmail('')
     setPassword('')
@@ -29,7 +46,7 @@ const UserLogin = () => {
           value={email}
           onChange={(e)=>{
             setEmail(e.target.value)
-            console.log(e.target.value)
+           
           }}
           placeholder="email@example.com"
           required
@@ -41,14 +58,14 @@ const UserLogin = () => {
           value={password}
           onChange={(e)=>{
             setPassword(e.target.value)
-            console.log(e.target.value)
+           
           }}
           className="font-mono bg-gray-300 rounded-2xl pr-6 text-center placeholder:text-gray-700 mt-2 p-2 "
           placeholder="Password"
         />
-        <Link className="mt-8 bg-black h-10 w-40 rounded-4xl text-white  text-2xl pt-1 font-sans text-center font-bold ">
+        <button className="mt-8 bg-black h-10 w-40 rounded-4xl text-white  text-2xl pt-1 font-sans text-center font-bold ">
           Login
-        </Link>
+        </button>
       </form>
       <div className="flex justify-center mt-4">
         <h4 className="text-gray-700 mr-1">New to Uber?</h4>
