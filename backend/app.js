@@ -13,9 +13,10 @@ app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 
 const userRouter = require('./routes/user.routes')
-
+const captainRouter = require('./routes/captain.routes')
+ 
 
 app.use('/api/v1/users',userRouter)
-
+app.use('/api/v1/captain',captainRouter)
 
 module.exports = app;

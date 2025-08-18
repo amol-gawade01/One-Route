@@ -5,7 +5,7 @@ const captainModel = require("../models/captain.model");
 
 const verifyJwt = async  (req,res,next) => {
   const token = req.headers["auth-token"] || req.cookies.token;
-   
+   console.log(req.headers["auth-token"] )
   const isBlacklistToken = await blacklistedModel.findOne({token})
   
   if(isBlacklistToken){
@@ -22,6 +22,7 @@ const verifyJwt = async  (req,res,next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(decoded?._id); 
+    console.log('user',user)
     if (!user) {
       return res.status(401).json({ message: "Unauthorized access" });
     }

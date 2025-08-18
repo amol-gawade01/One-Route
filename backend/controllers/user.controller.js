@@ -12,8 +12,10 @@ const blacklistedModel = require('../models/blacklisted.model');
 
 
 const SignUp = async (req, res, next) => {
-
+  
+try {
   const validatedData = signUpSchema.parse(req.body);
+ 
 
   const { firstName, lastName, password, email } = validatedData;
 
@@ -30,7 +32,7 @@ const SignUp = async (req, res, next) => {
   if (userNameExist) {
     throw new Error("User already exist");
   }
-try {
+
   
     const hashedPassword = await userModel.hashPassword(password)
   
@@ -53,6 +55,9 @@ try {
   });
     
 } catch (error) {
+  if (error.name === "ZodError") {
+      return res.status(400).json({ message: error.errors });
+    }
   res.json({
     message:"Error while creating user  "
   })
@@ -114,25 +119,26 @@ try {
 
   
 };
+const Logout = async (req, res) => {
+  const token = req.headers["auth-token"] || req.cookies.token;
 
-const Logout = async (req,res,next) => {
-   const token = req.headers["auth-token"] || req.cookies.token;
-   const blacklistedToken = await blacklistedModel.create({
-    token
-   });
-   
-   const options = {
-    httpOnly:true,
-    secure: process.env.NODE_ENV === 'production',
+  if (token) {
+    // only add to blacklist if not already
+    const exists = await blacklistedModel.findOne({ token });
+    if (!exists) {
+      await blacklistedModel.create({ token });
+    }
   }
 
-  res.clearCookie("token",options)
-    .json(
-    {
-      message:"User logout successfully"
-    }
-  )
-}
+  const options = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+  };
+
+  res.clearCookie("token", options).json({
+    message: "User logged out successfully"
+  });
+};
 
 
 const getUser = (req,res,next) => {

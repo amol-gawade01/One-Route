@@ -5,13 +5,14 @@ const {z} = require('zod')
 
 const registerSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "First name is required"),
   email: z.string().email({ message: "Invalid email address" }),
   password: z.string().min(6, "Password must be at least 6 characters"),
   vehicle: z.object({
     color: z.string().min(3, "Color of vehicle is required"),
     plate: z.string().min(5, "Vehicle plate number is required"),
     capacity: z.number().min(1, "At least have capacity of one guest"),
-    vehicleType: z.enum(['car', 'motorcycle', 'auto'])
+    vehicleType: z.enum(['car', 'moto', 'auto'])
   })
 });
 
@@ -49,7 +50,7 @@ const registerCaptain = async (req, res, next) => {
     const token = await newCaptain.generateAuthToken();
 
     
-    res.status(201).json({
+    res.status(200).json({
       message: "Captain created successfully",
       data: newCaptain,
       token
@@ -59,7 +60,7 @@ const registerCaptain = async (req, res, next) => {
     if (error.name === "ZodError") {
       return res.status(400).json({ message: error.errors });
     }
-    res.status(500).json({ message: error.message || "Error creating captain" });
+    res.status(403).json({ message: error.message || "Error creating captain" });
   }
 };
 
@@ -94,7 +95,8 @@ const loginCaptain = async(req,res,next) => {
   return res.status(200).setHeader("auth-token",token)
                         .cookie("token",token,options)
                         .json({
-                            message:"Captain Login Successfully"
+                            message:"Captain Login Successfully",
+                            token:token
                              })
   
   } catch (error) {
