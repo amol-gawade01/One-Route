@@ -1,4 +1,4 @@
-import axios from 'axios'
+ import axios from 'axios'
 import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { userDataContext } from '../context/UserContext'
@@ -6,6 +6,7 @@ import { userDataContext } from '../context/UserContext'
 
 const AuthLayoutUser = ({ children }) => {
   const token = localStorage.getItem('token')
+  console.log('this is token',token)
   const [isLoading, setIsLoading] = useState(true)
   const navigate = useNavigate()
   const { setUser } = useContext(userDataContext)
@@ -23,6 +24,7 @@ const AuthLayoutUser = ({ children }) => {
     })
       .then((response) => {
         if (response.status === 200) {
+          console.log('get there')
           setUser(response.data.data)
           setIsLoading(false)
         }

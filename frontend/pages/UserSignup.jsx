@@ -14,13 +14,8 @@ const UserSignup = () => {
 
   const { user, setUser } = useContext(userDataContext);
 
-  const token = localStorage.getItem("token");
-  useEffect(() => {
-    if (token) {
-      navigate("/home");
-    }
-  }, [token]);
-
+  
+  
   const submitForm = async (e) => {
     e.preventDefault();
 

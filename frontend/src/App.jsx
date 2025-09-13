@@ -17,7 +17,7 @@ const App = () => {
     <div>
       <Routes>
         <Route path='/' element={<Start/>}/>
-        <Route path='/home' element={<AuthLayoutCap><Home/></AuthLayoutCap>}/>
+        <Route path='/home' element={<AuthLayoutUser><Home/></AuthLayoutUser>}/>
         <Route path='/login' element={<UserLogin/>}/>
          <Route path='/logout' element={<AuthLayoutUser>
           <UserLogout/>

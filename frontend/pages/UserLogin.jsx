@@ -11,12 +11,16 @@ const UserLogin = () => {
   const [password, setPassword] = useState("");
   const { user, setUser } = useContext(userDataContext);
   const navigate = useNavigate();
+
   const token = localStorage.getItem("token");
+
   useEffect(() => {
     if (token) {
       navigate("/home");
     }
-  }, [token]);
+  }, [token, navigate]);
+
+  
   const submitForm = async (e) => {
     e.preventDefault();
 
@@ -32,7 +36,7 @@ const UserLogin = () => {
     console.log(response);
     if (response.status == 200) {
       const data = response.data;
-      console.log("data", data);
+      console.log("data", data.token);
       localStorage.setItem("token", data.token);
       setUser(data.user);
       navigate("/home");

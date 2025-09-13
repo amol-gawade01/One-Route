@@ -5,6 +5,7 @@ import { StrictMode } from "react";
 import UserContext from "../context/UserContext";
 import CaptainContext from "../context/CaptainContext";
 
+
 const main = () => {
   
   createRoot(document.getElementById("root")).render(
